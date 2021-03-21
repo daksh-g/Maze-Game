@@ -1,4 +1,5 @@
-import {Object3D, Vector3} from './three.min.js';
+import { Object3D, Vector3 } from './three.min.js';
+
 export default class Player extends Object3D {
 
     constructor(camera) {
@@ -6,16 +7,20 @@ export default class Player extends Object3D {
         this.dir = new Vector3();
         this.maxSpeed = 0.3;
         this.speed = 0;
+        this.camera = camera;
 
         this.add(camera);
-        this.position.setZ(3);
     }
     
     render() {
+
+        this.camera.rotation.x = Math.max(-Math.PI/2, Math.min(this.camera.rotation.x, Math.PI/2));
+
         const angle = Math.atan2(this.dir.z, this.dir.x) + this.rotation.y - Math.PI/2;
         const trueDir = new Vector3(-Math.sin(angle), 0, -Math.cos(angle));
 
         this.position.addScaledVector(trueDir, this.speed);
+
     }
     
     addDir(x, z) {
