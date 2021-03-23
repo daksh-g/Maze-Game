@@ -11,21 +11,35 @@ canvas.height = innerHeight;
 
 const renderer = new Three.WebGLRenderer({ canvas, antialias: true });
 
-const camera = new Three.PerspectiveCamera(80, 4/3, 0.1, 1000);
+const camera = new Three.PerspectiveCamera(90, 4/3, 0.1, 1000);
 
 const scene = new Three.Scene();
 
-const player = new Player(camera);
-
 const maze = new Maze();
-maze.position.set(0, -20, 0);
+
+const player = new Player(camera, maze);
+player.position.set(1, 0, 1);
+
+const end = new Three.Mesh(
+    new Three.BoxBufferGeometry(
+        maze.wallWidth,
+        maze.wallHeight,
+        maze.wallWidth
+    ),
+    new Three.MeshPhongMaterial({ color: 0x000000, emissive: 0x19bf2a})
+);
+
+end.position.set(
+    (maze.n - 0.5) * maze.wallWidth, 
+    0,
+    (maze.n - 0.5) * maze.wallWidth
+);
 
 scene.add(maze);
 scene.add(player);
+scene.add(end);
 
-function render(time) {
-
-    time *= 0.001;
+function render() {
     
     ui.innerHTML = `
         x: ${player.position.x.toFixed(2)}<br>
@@ -63,6 +77,12 @@ onkeydown = e => {
         case 'KeyW':
             player.addDir(0, 1);
             break;
+        case 'ShiftLeft':
+            player.position.y += 0.5;
+            return;
+        case 'ShiftRight':
+            player.position.y -= 0.5;
+            return;
         default:
             return;
     }

@@ -4,9 +4,9 @@ export default class Maze extends Object3D {
 
     constructor() {
         super();
-        this.n = 20;
+        this.n = 10;
         this.wallColor = 0x666699;
-        this.wallWidth = 1.5;
+        this.wallWidth = 2;
         this.wallHeight = 1;
         this.grid = Array.from(Array(this.n), () => new Array(this.n).fill(0));
         this.dirs = {
@@ -87,7 +87,7 @@ export default class Maze extends Object3D {
         );
         wall.position.set(
             (x + dx) * this.wallWidth,
-            this.wallHeight / 4,
+            0,
             (y + dy) * this.wallWidth
         );
         if(rotated) wall.rotation.y = Math.PI/2;
