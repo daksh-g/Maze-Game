@@ -8,6 +8,7 @@ export default class Player extends Object3D {
         this.trueDir = new Vector3();
         this.maxSpeed = 0.1;
         this.speed = 0;
+        this.stopped = true;
         this.ray = new Raycaster(
             this.position,
             this.trueDir,
@@ -27,11 +28,12 @@ export default class Player extends Object3D {
         const angle = Math.atan2(this.dir.z, this.dir.x) + this.rotation.y - Math.PI/2;
         this.trueDir.set(-Math.sin(angle), 0, -Math.cos(angle));
 
-        if(this.speed) {
-            const objs = this.ray.intersectObject(this.maze, true);
-            if(objs.length)
-                this.stop();
-        }
+        const objs = this.ray.intersectObject(this.maze, true);
+        if(objs.length)
+            this.speed = 0;
+
+        if(this.stopped)
+            this.speed *= 0.85;
 
         this.position.addScaledVector(this.trueDir, this.speed);
 
@@ -43,11 +45,11 @@ export default class Player extends Object3D {
 
     start() {
         this.speed = this.maxSpeed;
+        this.stopped = false;
     }
 
     stop() {
-        this.speed = 0;
-        this.dir.set(0, 0, 0);
+        this.stopped = true;
     }
 
 }
