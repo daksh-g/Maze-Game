@@ -60,6 +60,7 @@ let keys = new Set();
 
 onkeydown = e => {
     if(keys.has(e.code)) return;
+    if(!keys.size) player.dir.set(0, 0, 0);
     switch(e.code) {
         case 'ArrowLeft':
         case 'KeyA':
@@ -91,26 +92,27 @@ onkeydown = e => {
 }
 
 onkeyup = e => {
-    switch(e.code) {
-        case 'ArrowLeft':
-        case 'KeyA':
-            player.addDir(1, 0);
-            break;
-        case 'ArrowRight':
-        case 'KeyD':
-            player.addDir(-1, 0);
-            break;
-        case 'ArrowDown':
-        case 'KeyS':
-            player.addDir(0, 1);
-            break;
-        case 'ArrowUp':
-        case 'KeyW':
-            player.addDir(0, -1);
-            break;
-        default:
-            return;
-    }
+    if(keys.size != 1)
+        switch(e.code) {
+            case 'ArrowLeft':
+            case 'KeyA':
+                player.addDir(1, 0);
+                break;
+            case 'ArrowRight':
+            case 'KeyD':
+                player.addDir(-1, 0);
+                break;
+            case 'ArrowDown':
+            case 'KeyS':
+                player.addDir(0, 1);
+                break;
+            case 'ArrowUp':
+            case 'KeyW':
+                player.addDir(0, -1);
+                break;
+            default:
+                return;
+        }
     keys.delete(e.code);
     if(!keys.size) player.stop();
 }
