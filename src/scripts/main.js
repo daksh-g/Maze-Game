@@ -11,7 +11,7 @@ canvas.height = innerHeight;
 
 const renderer = new Three.WebGLRenderer({ canvas, antialias: true });
 
-const camera = new Three.PerspectiveCamera(90, 4/3, 0.1, 1000);
+const camera = new Three.PerspectiveCamera(90, 4/3, 0.075, 1000);
 
 const scene = new Three.Scene();
 
