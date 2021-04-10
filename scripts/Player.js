@@ -1,4 +1,4 @@
-import { Object3D, Raycaster, Vector3 } from './three.min.js';
+import { Object3D, PointLight, Raycaster, Vector3 } from './three.min.js';
 
 export default class Player extends Object3D {
 
@@ -13,12 +13,16 @@ export default class Player extends Object3D {
             this.position,
             this.trueDir,
             0,
-            0.25
+            0.4
         );
         this.camera = camera;
         this.maze = maze;
+        this.light = new PointLight(0xffffff, 1);
+        this.light.position.setY(2);
+        this.rotation.y = Math.PI * 5/4;
 
         this.add(camera);
+        this.add(this.light);
     }
     
     render() {
