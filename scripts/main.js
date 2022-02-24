@@ -17,27 +17,27 @@ const scene = new Three.Scene();
 
 const maze = new Maze();
 
-const player = new Player(camera, maze);
-player.position.set(1, 0, 1);
-
-const end = new Three.Mesh(
-    new Three.BoxBufferGeometry(
-        maze.wallWidth,
+const finish = new Three.Mesh(
+    new Three.BoxGeometry(
+        maze.wallWidth - 0.1,
         maze.wallHeight,
-        maze.wallWidth
+        maze.wallWidth - 0.1
     ),
     new Three.MeshPhongMaterial({ color: 0x000000, emissive: 0x19bf2a})
 );
 
-end.position.set(
-    (maze.n - 0.5) * maze.wallWidth, 
+finish.position.set(
+    (maze.size - 0.5) * maze.wallWidth, 
     0,
-    (maze.n - 0.5) * maze.wallWidth
+    (maze.size - 0.5) * maze.wallWidth
 );
+
+const player = new Player(camera, maze, finish);
+player.position.set(1, 0, 1);
 
 scene.add(maze);
 scene.add(player);
-scene.add(end);
+scene.add(finish);
 
 function render() {
     
