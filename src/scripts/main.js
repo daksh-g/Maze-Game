@@ -11,7 +11,7 @@ canvas.height = innerHeight;
 
 const renderer = new Three.WebGLRenderer({ canvas, antialias: true });
 
-const camera = new Three.PerspectiveCamera(90, 4/3, 0.075, 1000);
+const camera = new Three.PerspectiveCamera(90, 4/3, 0.075, 500);
 
 const scene = new Three.Scene();
 
@@ -19,9 +19,9 @@ const maze = new Maze();
 
 const finish = new Three.Mesh(
     new Three.BoxGeometry(
-        maze.wallWidth - 0.1,
+        maze.wallWidth * 3/4,
         maze.wallHeight,
-        maze.wallWidth - 0.1
+        maze.wallWidth * 3/4
     ),
     new Three.MeshPhongMaterial({ color: 0x000000, emissive: 0x19bf2a})
 );
@@ -31,6 +31,14 @@ finish.position.set(
     0,
     (maze.size - 0.5) * maze.wallWidth
 );
+
+const replayCam = new Three.OrthographicCamera(-maze.size/2, maze.size/2, maze.size/2, -maze.size/2, 0.075, 500);
+replayCam.zoom = 0.2;
+replayCam.position.set(0, maze.size * 10, 0);
+replayCam.rotation.set(-Math.PI/2 + 0.15, Math.PI * 5/4, 0, 'YXZ');
+replayCam.updateProjectionMatrix();
+
+let replaying = false;
 
 const player = new Player(camera, maze, finish);
 player.position.set(1, 0, 1);
@@ -45,11 +53,26 @@ function render() {
         x: ${player.position.x.toFixed(2)}<br>
         y: ${player.position.y.toFixed(2)}<br>
         z: ${player.position.z.toFixed(2)}
-    `;
+        `;
+        
+    if(replaying && !player.replaying) {
+        replaying = false;
+        player.respawn();
+        maze.regenerate();
+    }
+
+    if(!replaying && player.ray.intersectObject(finish).length) {
+        replaying = true;
+        player.respawn();
+        player.replay();
+    }
 
     player.render();
-
-    renderer.render(scene, camera);
+    
+    if(replaying)
+        renderer.render(scene, replayCam);
+    else
+        renderer.render(scene, camera);
 
     requestAnimationFrame(render);
 

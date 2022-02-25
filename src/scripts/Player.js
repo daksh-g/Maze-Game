@@ -1,4 +1,4 @@
-import { Object3D, PointLight, Raycaster, Vector3 } from './three.min.js';
+import { Mesh, SphereGeometry, MeshPhongMaterial, Object3D, PointLight, Raycaster, Vector3 } from './three.min.js';
 
 export default class Player extends Object3D {
 
@@ -26,6 +26,23 @@ export default class Player extends Object3D {
 
         this.add(camera);
         this.add(this.light);
+
+        this.replayFps = 15;
+        this.replaySpeed = 2;
+        this.replaying = false;
+    }
+
+    get replaying() {
+        return this._replaying;
+    }
+
+    set replaying(val) {
+        this._replaying = val;
+
+        if(val) return;
+
+        this.positions = [];
+        this.intervalId = setInterval(() => this.positions.push(this.position.clone()), 1000/this.replayFps);
     }
     
     render() {
@@ -35,18 +52,14 @@ export default class Player extends Object3D {
         const angle = Math.atan2(this.dir.z, this.dir.x) + this.rotation.y - Math.PI/2;
         this.trueDir.set(-Math.sin(angle), 0, -Math.cos(angle));
 
-        let objs = this.ray.intersectObject(this.maze);
+        const objs = this.ray.intersectObject(this.maze);
         if(objs.length)
             this.speed = 0;
 
-        objs = this.ray.intersectObject(this.finish);
-        if(objs.length) {
-            this.maze.regenerate();
-            this.respawn();
-        }
-
         if(this.stopped)
             this.speed *= 0.85;
+
+        if(this.replaying) return;
 
         this.position.addScaledVector(this.trueDir, this.speed);
 
@@ -68,6 +81,33 @@ export default class Player extends Object3D {
     respawn() {
         this.position.set(1, 0, 1);
         this.rotation.y = Math.PI * 5/4;
+    }
+
+    replay() {
+
+        clearInterval(this.intervalId);
+        while(this.positions[0].toArray().toString() == [1, 0, 1].toString())
+            this.positions.shift();
+
+        this.replaying = true;
+
+        const playerModel = new Mesh(
+            new SphereGeometry(1/4),
+            new MeshPhongMaterial({color: 0x000000, emissive: 0xffffff})
+        );
+        this.add(playerModel);
+
+        this.respawn();
+
+        const updateReplay = ind => {
+            if(ind == this.positions.length) {
+                this.replaying = false;
+                return;
+            }
+            this.position.set(...this.positions[ind]);
+            setTimeout(updateReplay, 1000/this.replayFps/this.replaySpeed, ind + 1);;
+        };
+        updateReplay(0);
     }
 
 }
