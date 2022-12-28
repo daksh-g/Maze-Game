@@ -101,12 +101,6 @@ onkeydown = e => {
         case 'KeyW':
             player.addDir(0, 1);
             break;
-        case 'ShiftLeft':
-            player.position.y += 0.5;
-            return;
-        case 'ShiftRight':
-            player.position.y -= 0.5;
-            return;
         default:
             return;
     }
